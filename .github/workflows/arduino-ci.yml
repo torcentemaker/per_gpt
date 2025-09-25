@@ -1,0 +1,22 @@
+﻿name: arduino-cli
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: arduino/setup-arduino-cli@v2
+      - run: arduino-cli core update-index
+      - run: arduino-cli core install arduino:samd
+      - name: Install libs
+        run: arduino-cli lib install Arduino_MKRIoTCarrier FlashStorage
+      - name: Compile (MKR WiFi 1010)
+        run: arduino-cli compile --fqbn arduino:samd:mkrwifi1010 .
+      - name: Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            **/*.bin
+            **/*.hex
+            **/*.elf
